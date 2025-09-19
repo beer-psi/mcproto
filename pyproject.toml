@@ -25,6 +25,9 @@ dev = [
     "construct-typing>=0.6.2",
     "ruff==0.13.0",
 ]
+test = [
+    "pytest>=8.4.2",
+]
 
 [tool.basedpyright]
 stubPath = "stubs"

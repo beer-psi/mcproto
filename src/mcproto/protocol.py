@@ -272,7 +272,7 @@ class MinecraftProtocol:
             raise LocalProtocolError("packets cannot be larger than 2 ** 21 - 1 bytes")
 
         # frame the packet
-        data = SizedVarInt(21).build(len(data)) + data
+        data = SizedVarInt(32, 3).build(len(data)) + data
 
         # encrypt the packet, if we have to
         if self._encryptor is not None:
@@ -493,7 +493,7 @@ class FrameDecoder:
             return None
 
         try:
-            packet_length = SizedVarInt(21).parse_stream(bio)
+            packet_length = SizedVarInt(32, 3).parse_stream(bio)
         except IntegerError:
             raise PacketParseError("packet length cannot exceed 3 bytes") from None
         except StreamError:
