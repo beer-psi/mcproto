@@ -4,7 +4,7 @@ from enum import IntEnum
 from typing import Any, Literal
 
 from .events import CloseConnection, Event, PacketReceived
-from .exceptions import LocalProtocolError, PacketParseError, RemoteProtocolError
+from .exceptions import LocalProtocolError, RemoteProtocolError
 from .packets.serverbound.handshaking import ConnectionIntent
 from .protocol import MinecraftProtocol
 from .types import MinecraftProtocolDefinition, MultiplayerState, Packet, TextComponent
