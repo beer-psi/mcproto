@@ -159,25 +159,32 @@ class MinecraftProtocol:
                 yield None
                 continue
 
-            if self._frame_decoder.recognize_legacy_ping and data[0] == 0xFE:
+            try:
+                if self._frame_decoder.recognize_legacy_ping and data[0] == 0xFE:
+                    yield {
+                        "name": "legacy_server_list_ping",
+                        "params": {
+                            k: v
+                            for k, v in LegacyServerListPingFormat.parse(data).items()
+                            if not k.startswith("_")
+                        },
+                    }
+                    continue
+
+                raw = self._recv_packet_struct.parse(data)
+
                 yield {
-                    "name": "legacy_server_list_ping",
+                    "name": raw.name,
                     "params": {
                         k: v
-                        for k, v in LegacyServerListPingFormat.parse(data).items()
-                        if not k.startswith("_")
-                    },
+                        for k, v in raw.params.items()  # pyright: ignore[reportUnknownMemberType, reportUnknownVariableType]
+                        if not k.startswith("_")  # pyright: ignore[reportUnknownMemberType]
+                    }
+                    if isinstance(raw.params, Mapping)
+                    else raw.params,
                 }
-                continue
-
-            raw = self._recv_packet_struct.parse(data)
-
-            yield {
-                "name": raw.name,
-                "params": {k: v for k, v in raw.params.items() if not k.startswith("_")}  # pyright: ignore[reportUnknownMemberType, reportUnknownVariableType]
-                if isinstance(raw.params, Mapping)
-                else raw.params,
-            }
+            except ConstructError as e:
+                raise PacketParseError("invalid packet data") from e
 
     @property
     def _state_protocol(self):
