@@ -171,7 +171,7 @@ class MinecraftConnection:
                 self._call_packet_handler("receive", packet)
 
                 yield PacketReceived(packet)
-        except PacketParseError as e:
+        except Exception as e:
             yield CloseConnection(e)
 
     def set_encryption(self, secret: bytes) -> None:
