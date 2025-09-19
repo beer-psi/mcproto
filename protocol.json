@@ -1,0 +1,77 @@
+{
+    "types": {
+        "string": [
+            "pstring",
+            {
+                "countType": "varint"
+            }
+        ]
+    },
+    "handshaking": {
+        "toServer": {
+            "types": {
+                "packet_set_protocol": [
+                    "container",
+                    [
+                        {
+                            "name": "protocolVersion",
+                            "type": "varint"
+                        },
+                        {
+                            "name": "serverHost",
+                            "type": "string"
+                        },
+                        {
+                            "name": "serverPort",
+                            "type": "u16"
+                        },
+                        {
+                            "name": "nextState",
+                            "type": "varint"
+                        }
+                    ]
+                ],
+                "packet_legacy_server_list_ping": [
+                    "container",
+                    [
+                        {
+                            "name": "payload",
+                            "type": "u8"
+                        }
+                    ]
+                ],
+                "packet": [
+                    "container",
+                    [
+                        {
+                            "name": "name",
+                            "type": [
+                                "mapper",
+                                {
+                                    "type": "varint",
+                                    "mappings": {
+                                        "0x00": "set_protocol",
+                                        "0xfe": "legacy_server_list_ping"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "params",
+                            "type": [
+                                "switch",
+                                {
+                                    "compareTo": "name",
+                                    "fields": {
+                                        "set_protocol": "packet_set_protocol",
+                                        "legacy_server_list_ping": "packet_legacy_server_list_ping"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                ]
+            }
+        }
+    }
+}
