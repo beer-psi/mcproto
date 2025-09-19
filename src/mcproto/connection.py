@@ -88,10 +88,6 @@ class MinecraftConnection:
         Processes a packet for sending. If `packet` is a buffer, it is treated
         as raw packet content, **excluding the packet length prefix**.
 
-        **This method does not handle `encryption_begin`! The shared secret in
-        the packet is already encrypted, so the connection cannot know what key
-        to set!**
-
         When sending a regular packet, state switching is handled automatically:
 
         | `packet["name"]`             | Target state                               |
@@ -173,8 +169,7 @@ class MinecraftConnection:
         the connection
 
         Packets that require sending back matching responses (such as `keep_alive` and `ping`)
-        have responses appended to the internal data buffer, which you can use
-        :meth:`bytes_to_send` to retrieve.
+        have to be handled manually.
 
         :raises PacketParseError: if the data received could not be parsed into packets
         """
@@ -266,8 +261,14 @@ class MinecraftConnection:
     def _on_disconnect(self, _params: Any):
         self._connection_state = ConnectionState.CLOSED
 
+    # Massive wall of event handlers...
+
+    # Client/Handshaking
+
     def _on_client_send_handshaking_set_protocol(self, params: Any):
         self._on_handshaking_set_protocol(params)
+
+    # Client/Login
 
     def _on_client_send_login_login_acknowledged(self, _params: Any):
         self._protocol.state = MultiplayerState.CONFIGURATION
@@ -278,11 +279,15 @@ class MinecraftConnection:
     def _on_client_receive_login_compress(self, params: Any):
         self._on_login_compress(params)
 
+    # Client/Configuration
+
     def _on_client_send_configuration_finish_configuration(self, _params: Any):
         self._protocol.state = MultiplayerState.PLAY
 
     def _on_client_receive_configuration_disconnect(self, params: Any):
         self._on_disconnect(params)
+
+    # Client/Play
 
     def _on_client_send_play_configuration_acknowledged(self, _params: Any):
         self._protocol.state = MultiplayerState.CONFIGURATION
@@ -293,17 +298,23 @@ class MinecraftConnection:
     def _on_server_receive_handshaking_set_protocol(self, params: Any):
         self._on_handshaking_set_protocol(params)
 
+    # Server/Login
+
     def _on_server_send_login_disconnect(self, params: Any):
         self._on_disconnect(params)
 
     def _on_server_send_login_compress(self, params: Any):
         self._on_login_compress(params)
 
+    # Server/Configuration
+
     def _on_server_send_configuration_disconnect(self, params: Any):
         self._on_disconnect(params)
 
     def _on_server_send_configuration_finish_configuration(self, _params: Any):
         self._protocol.state = MultiplayerState.PLAY
+
+    # Server/Play
 
     def _on_server_send_play_start_configuration(self, _params: Any):
         self._protocol.state = MultiplayerState.CONFIGURATION
