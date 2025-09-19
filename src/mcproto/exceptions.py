@@ -4,6 +4,12 @@ class MCProtoError(Exception):
     """
 
 
+class EncryptionSetTwiceError(Exception):
+    """
+    The connection had its encryption secret key set twice.
+    """
+
+
 class PacketParseError(MCProtoError):
     """
     Could not parse the received data for any reason. It is recommended

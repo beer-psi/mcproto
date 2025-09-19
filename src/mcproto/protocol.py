@@ -17,7 +17,11 @@ from cryptography.hazmat.primitives.ciphers import (
 from protodef.datatypes.varint import SizedVarInt
 
 from .codecs import ADDITIONAL_PROTODEF_TYPES
-from .exceptions import LocalProtocolError, PacketParseError
+from .exceptions import (
+    EncryptionSetTwiceError,
+    LocalProtocolError,
+    PacketParseError,
+)
 from .packets.serverbound.handshaking import LegacyServerListPingFormat
 from .types import MinecraftProtocolDefinition, MultiplayerState, Packet
 
@@ -297,7 +301,7 @@ class DecryptionHandler:
 
     def set_encryption(self, secret: bytes):
         if self.cipher is not None:
-            raise RuntimeError("attempted to set encryption twice")
+            raise EncryptionSetTwiceError("attempted to set encryption twice")
 
         self.cipher = Cipher(algorithms.AES(secret), modes.CFB8(secret))
         self.decryptor = self.cipher.decryptor()
@@ -404,7 +408,9 @@ class FrameDecoder:
     # - It's still popular (the official server still supports this)
     def parse_legacy_server_ping(self) -> bytes | None:
         if not self.recognize_legacy_ping:
-            return None
+            # The entrypoint that you're supposed to call, process_buffer(),
+            # also guards on recognize_legacy_ping already.
+            return None  # pragma: no cover
 
         maybe_ping = self.buffer.consume_at_most(2)
         consumed = len(maybe_ping)
