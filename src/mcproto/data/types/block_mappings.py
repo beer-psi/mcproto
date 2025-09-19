@@ -36,7 +36,7 @@ class BlockReference(TypedDict, total=False):
     Required property
     """
 
-    states: Required[dict[str, Any]]
+    states: Required[dict[str, Any]]  # pyright: ignore[reportExplicitAny]
     """
     The block's state properties as key-value pairs.
 

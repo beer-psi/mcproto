@@ -1,3 +1,4 @@
+# pyright: reportDeprecated=false
 from typing import Any, Literal, Required, TypedDict, Union
 
 
@@ -26,7 +27,7 @@ _ArgumentNodeChildrenItem = Union["_LiteralNode", "_ArgumentNode"]
 
 class _ArgumentNodeParser(TypedDict, total=False):
     parser: str
-    modifier: dict[str, Any] | None
+    modifier: dict[str, Any] | None  # pyright: ignore[reportExplicitAny]
 
 
 _ArgumentNodeType = Literal["argument"]
@@ -64,7 +65,7 @@ class _ParserInfo(TypedDict, total=False):
     parser: Required[str]
     """ Required property """
 
-    modifier: Required[dict[str, Any] | None]
+    modifier: Required[dict[str, Any] | None]  # pyright: ignore[reportExplicitAny]
     """ Required property """
 
     examples: Required[list[str]]

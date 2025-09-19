@@ -295,6 +295,8 @@ class MinecraftConnection:
     def _on_client_receive_play_kick_disconnect(self, params: Any):
         self._on_disconnect(params)
 
+    # Server/Handshaking
+
     def _on_server_receive_handshaking_set_protocol(self, params: Any):
         self._on_handshaking_set_protocol(params)
 

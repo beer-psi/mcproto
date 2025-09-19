@@ -91,7 +91,7 @@ class VersionSpecificValue(TypedDict, total=False):
         - versions
     """
 
-    value: Required[str | int | float | dict[str, Any] | None | bool | None]
+    value: Required[Any]  # pyright: ignore[reportExplicitAny]
     """
     The value for this feature in the specified versions
 

@@ -63,7 +63,7 @@ class BlockLootEntry(TypedDict, total=False):
     Required property
     """
 
-    states: dict[str, Any]
+    states: dict[str, Any]  # pyright: ignore[reportExplicitAny]
     """ The states of the block (Bedrock Edition) """
 
     drops: Required[list["BlockItemDrop"]]

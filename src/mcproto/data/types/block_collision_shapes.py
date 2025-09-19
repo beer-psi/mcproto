@@ -1,3 +1,4 @@
+# pyright: reportDeprecated=fales
 from typing import Required, TypedDict, Union
 
 
