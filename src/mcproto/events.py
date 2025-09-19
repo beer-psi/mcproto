@@ -2,9 +2,10 @@ from abc import ABC
 from dataclasses import dataclass
 from typing import Generic, TypeVar
 
-from .types.packet import Packet
+from .packets import Packet
 
 T = TypeVar("T")
+NameT = TypeVar("NameT", bound=str)
 
 
 class Event(ABC):
@@ -12,10 +13,10 @@ class Event(ABC):
 
 
 @dataclass(frozen=True)
-class PacketReceived(Event, Generic[T]):
+class PacketReceived(Event, Generic[NameT, T]):
     """A packet was received."""
 
-    packet: Packet[T]
+    packet: Packet[NameT, T]
 
 
 @dataclass(frozen=True)

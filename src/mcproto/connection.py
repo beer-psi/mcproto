@@ -1,13 +1,18 @@
 # pyright: reportAny=false, reportExplicitAny=false
 from collections.abc import Generator
 from enum import IntEnum
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
+import protodef
+
+from .codecs import ADDITIONAL_PROTODEF_TYPES
+from .data import MinecraftData
 from .events import ConnectionEnded, Event, PacketReceived
 from .exceptions import LocalProtocolError, RemoteProtocolError
+from .packets import Packet
 from .packets.serverbound.handshaking import ConnectionIntent
 from .protocol import MinecraftProtocol
-from .types import MinecraftProtocolDefinition, MultiplayerState, Packet, TextComponent
+from .types import MinecraftProtocolDefinition, MultiplayerState, TextComponent
 
 
 class ConnectionType(IntEnum):
@@ -44,13 +49,20 @@ class MinecraftConnection:
 
     @classmethod
     def for_version(cls, version: str, connection_type: ConnectionType):
-        protocol = MinecraftProtocol.for_version(
-            version, is_client=connection_type is ConnectionType.CLIENT
+        mc_data = MinecraftData(version)
+        proto = protodef.from_definition(
+            mc_data.protocol,
+            additional_types=ADDITIONAL_PROTODEF_TYPES,  # pyright: ignore[reportArgumentType]
         )
+        proto_version = MinecraftData.pc_versions_by_minecraft_version[version][
+            "version"
+        ]
 
-        # this creates a new protocol object which is a bit silly. i need to think
-        # of a better API
-        return cls(connection_type, protocol.protocol, protocol.protocol_version)
+        return cls(
+            connection_type,
+            cast(MinecraftProtocolDefinition, proto),  # pyright: ignore[reportInvalidCast]
+            proto_version,
+        )
 
     @property
     def connection_state(self) -> ConnectionState:
@@ -72,7 +84,7 @@ class MinecraftConnection:
     def protocol_version(self) -> int:
         return self._protocol.protocol_version
 
-    def send(self, packet: Packet[Any] | bytes | bytearray) -> bytes:
+    def send(self, packet: Packet[Any, Any] | bytes | bytearray) -> bytes:
         """
         Processes a packet for sending. If `packet` is a buffer, it is treated
         as raw packet content, **excluding the packet length prefix**.
@@ -219,7 +231,7 @@ class MinecraftConnection:
         return data
 
     def _call_packet_handler(
-        self, direction: Literal["receive", "send"], packet: Packet[Any]
+        self, direction: Literal["receive", "send"], packet: Packet[Any, Any]
     ):
         handler_name = f"_on_{'client' if self.is_client else 'server'}_{direction}_{self._protocol.state.value}_{packet['name']}"
         handler_fn = getattr(self, handler_name, None)

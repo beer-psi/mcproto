@@ -1,6 +1,5 @@
 # pyright: reportAny=false
 import io
-import json
 import zlib
 from collections.abc import Generator, Mapping
 from pathlib import Path
@@ -17,13 +16,15 @@ from cryptography.hazmat.primitives.ciphers import (
 from protodef.datatypes.varint import SizedVarInt
 
 from .codecs import ADDITIONAL_PROTODEF_TYPES
+from .data import MinecraftData
 from .exceptions import (
     EncryptionSetTwiceError,
     LocalProtocolError,
     PacketParseError,
 )
+from .packets import Packet
 from .packets.serverbound.handshaking import LegacyServerListPingFormat
-from .types import MinecraftProtocolDefinition, MultiplayerState, Packet
+from .types import MinecraftProtocolDefinition, MultiplayerState
 
 _MINECRAFT_DATA_DIR = Path(__file__).parent / "data"
 
@@ -117,7 +118,7 @@ class MinecraftProtocol:
             not is_client and state == MultiplayerState.HANDSHAKING
         )
 
-        self._parse_more: Generator[Packet[Any] | None, None, None] = (  # pyright: ignore[reportExplicitAny]
+        self._parse_more: Generator[Packet[Any, Any] | None, None, None] = (  # pyright: ignore[reportExplicitAny]
             self._parse_more_gen()
         )
 
@@ -136,18 +137,12 @@ class MinecraftProtocol:
         [minecraft-data]: https://github.com/PrismarineJS/minecraft-data
         """
 
-        proto = protodef.from_file(
-            _MINECRAFT_DATA_DIR / "data" / "pc" / version / "protocol.json",
+        mc_data = MinecraftData(version)
+        proto = protodef.from_definition(
+            mc_data.protocol,
             additional_types=ADDITIONAL_PROTODEF_TYPES,  # pyright: ignore[reportArgumentType]
         )
-
-        with (
-            _MINECRAFT_DATA_DIR / "data" / "pc" / "common" / "protocolVersions.json"
-        ).open("rb") as f:
-            data = json.load(f)
-            protocol_version = next(
-                v["version"] for v in data if v["minecraftVersion"] == version
-            )
+        protocol_version = mc_data.pc_versions_by_minecraft_version[version]["version"]
 
         return cls(
             cast(MinecraftProtocolDefinition, proto),  # pyright: ignore[reportInvalidCast]
@@ -156,7 +151,7 @@ class MinecraftProtocol:
             is_client=is_client,
         )
 
-    def _parse_more_gen(self) -> Generator["Packet[Any] | None", None, None]:  # pyright: ignore[reportExplicitAny]
+    def _parse_more_gen(self) -> Generator["Packet[Any, Any] | None", None, None]:  # pyright: ignore[reportExplicitAny]
         while True:
             data = self._decryption_handler.process_buffer()
 
@@ -234,7 +229,7 @@ class MinecraftProtocol:
 
         return self._decryption_handler.receive_bytes(data)
 
-    def received_packets(self) -> Generator[Packet[Any], None, None]:  # pyright: ignore[reportExplicitAny]
+    def received_packets(self) -> Generator[Packet[Any, Any], None, None]:  # pyright: ignore[reportExplicitAny]
         """Generator to iterate through all packets currently available."""
 
         for packet in self._parse_more:
@@ -243,7 +238,7 @@ class MinecraftProtocol:
 
             yield packet
 
-    def send_packet(self, packet: Packet[Any] | bytes | bytearray) -> bytes:  # pyright: ignore[reportExplicitAny]
+    def send_packet(self, packet: Packet[Any, Any] | bytes | bytearray) -> bytes:  # pyright: ignore[reportExplicitAny]
         """
         Processes the packet for sending. If `packet` is `bytes` or `bytearray`, it
         will be treated as raw packet data (not including the packet length), otherwise

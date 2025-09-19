@@ -1,5 +1,6 @@
 # pyright: reportAny=false
 from enum import IntEnum
+from typing import Literal, TypedDict
 
 from construct import (
     Bytes,
@@ -16,6 +17,8 @@ from construct import (
     len_,
     this,
 )
+
+from mcproto.packets.base import Packet
 
 LegacyServerListPingFormat = Struct(
     "ping"
@@ -57,3 +60,14 @@ class ConnectionIntent(IntEnum):
     STATUS = 1
     LOGIN = 2
     TRANSFER = 3
+
+
+class HandshakeC2SParams(TypedDict):
+    protocolVersion: int
+    serverHost: str
+    serverPort: int
+    nextState: Literal[1, 2, 3]
+
+
+class HandshakeC2SPacket(Packet[Literal["set_protocol"], HandshakeC2SParams]):
+    pass

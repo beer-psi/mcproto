@@ -1,10 +1,10 @@
 from .connection import ConnectionState, ConnectionType, MinecraftConnection
 from .events import ConnectionEnded, Event, PacketReceived
 from .exceptions import (
+    LocalProtocolError,
     MCProtoError,
     PacketParseError,
     ProtocolError,
-    LocalProtocolError,
     RemoteProtocolError,
 )
 from .protocol import MinecraftProtocol
