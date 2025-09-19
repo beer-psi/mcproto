@@ -1,3 +1,0 @@
-[submodule "src/mcproto/data"]
-	path = src/mcproto/data
-	url = https://github.com/PrismarineJS/minecraft-data
