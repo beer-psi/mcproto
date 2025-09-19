@@ -1,5 +1,5 @@
 from .connection import ConnectionState, ConnectionType, MinecraftConnection
-from .events import CloseConnection, Event, PacketReceived
+from .events import ConnectionEnded, Event, PacketReceived
 from .exceptions import (
     MCProtoError,
     PacketParseError,
@@ -12,7 +12,7 @@ from .types.protodef import MinecraftProtocolDefinition
 from .types.state import MultiplayerState
 
 __all__ = (
-    "CloseConnection",
+    "ConnectionEnded",
     "ConnectionState",
     "ConnectionType",
     "Event",

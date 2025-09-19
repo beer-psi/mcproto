@@ -19,7 +19,7 @@ class PacketReceived(Event, Generic[T]):
 
 
 @dataclass(frozen=True)
-class CloseConnection(Event):
+class ConnectionEnded(Event):
     """
     The end of a connection caused by an exception (usually :class:`PacketParseError`).
 

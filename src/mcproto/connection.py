@@ -3,7 +3,7 @@ from collections.abc import Generator
 from enum import IntEnum
 from typing import Any, Literal
 
-from .events import CloseConnection, Event, PacketReceived
+from .events import ConnectionEnded, Event, PacketReceived
 from .exceptions import LocalProtocolError, RemoteProtocolError
 from .packets.serverbound.handshaking import ConnectionIntent
 from .protocol import MinecraftProtocol
@@ -172,7 +172,7 @@ class MinecraftConnection:
 
                 yield PacketReceived(packet)
         except Exception as e:
-            yield CloseConnection(e)
+            yield ConnectionEnded(e)
 
     def set_encryption(self, secret: bytes) -> None:
         """
