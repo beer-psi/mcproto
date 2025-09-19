@@ -375,11 +375,13 @@ class FrameDecoder:
         self.buffer.feed(data)
 
     def process_buffer(self) -> bytes | None:
-        if (
-            self.recognize_legacy_ping
-            and (payload := self.parse_legacy_server_ping()) is not None
-        ):
-            return payload
+        if self.recognize_legacy_ping:
+            if (payload := self.parse_legacy_server_ping()) is not None:
+                return payload
+
+            # parse_legacy_server_ping() may have mutated this.
+            if self.recognize_legacy_ping:
+                return None
 
         if self.packet_length is None:
             if (packet_length := self.parse_packet_length()) is None:
@@ -500,8 +502,7 @@ class FrameDecoder:
             self.buffer.rollback()
             return None
 
-        if packet_length < 0:
-            raise PacketParseError("packet length cannot be negative")
+        # packet length cannot be negative because we only use 21/32 bits
 
         self.buffer.return_bytes(consumed - bio.tell())
         self.buffer.commit()
