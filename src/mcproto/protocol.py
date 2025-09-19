@@ -369,6 +369,7 @@ class FrameDecoder:
     def __init__(self):
         self.buffer: Buffer = Buffer()
         self.recognize_legacy_ping: bool = False
+        self.packet_length: int | None = None
 
     def receive_bytes(self, data: bytes) -> None:
         self.buffer.feed(data)
@@ -380,15 +381,19 @@ class FrameDecoder:
         ):
             return payload
 
-        if (packet_length := self.parse_packet_length()) is None:
-            return None
+        if self.packet_length is None:
+            if (packet_length := self.parse_packet_length()) is None:
+                return None
 
-        packet = self.buffer.consume_exactly(packet_length)
+            self.packet_length = packet_length
+
+        packet = self.buffer.consume_exactly(self.packet_length)
 
         if packet is None:
             return None
 
         self.buffer.commit()
+        self.packet_length = None
 
         return packet
 
