@@ -2,7 +2,7 @@ from typing import Literal, Required, TypedDict
 
 
 class Window(TypedDict, total=False):
-    """ window. """
+    """window."""
 
     id: Required[str]
     """
@@ -47,7 +47,6 @@ uniqueItems: True
 """
 
 
-
 class _WindowOpenedwithItem(TypedDict, total=False):
     type: Required["_WindowOpenedwithItemType"]
     """ Required property """
@@ -56,19 +55,17 @@ class _WindowOpenedwithItem(TypedDict, total=False):
     """ Required property """
 
 
-
-_WindowOpenedwithItemType = Literal['item'] | Literal['entity'] | Literal['block']
-_WINDOWOPENEDWITHITEMTYPE_ITEM: Literal['item'] = "item"
+_WindowOpenedwithItemType = Literal["item"] | Literal["entity"] | Literal["block"]
+_WINDOWOPENEDWITHITEMTYPE_ITEM: Literal["item"] = "item"
 """The values for the '_WindowOpenedwithItemType' enum"""
-_WINDOWOPENEDWITHITEMTYPE_ENTITY: Literal['entity'] = "entity"
+_WINDOWOPENEDWITHITEMTYPE_ENTITY: Literal["entity"] = "entity"
 """The values for the '_WindowOpenedwithItemType' enum"""
-_WINDOWOPENEDWITHITEMTYPE_BLOCK: Literal['block'] = "block"
+_WINDOWOPENEDWITHITEMTYPE_BLOCK: Literal["block"] = "block"
 """The values for the '_WindowOpenedwithItemType' enum"""
-
 
 
 class _WindowSlotsItem(TypedDict, total=False):
-    """ A slot or slot range in the window """
+    """A slot or slot range in the window"""
 
     name: Required[str]
     """
@@ -92,4 +89,3 @@ class _WindowSlotsItem(TypedDict, total=False):
 
     minimum: 0
     """
-

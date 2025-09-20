@@ -7,6 +7,7 @@ members = [
     "mcdata",
     "mcproto",
     "mcproto-workspace",
+    "nazuna",
 ]
 
 [[package]]
@@ -248,6 +249,12 @@ dependencies = [
     { name = "cryptography" },
     { name = "mutf8" },
     { name = "pyprotodef" },
+    { name = "typing-extensions" },
+]
+
+[package.optional-dependencies]
+mcdata = [
+    { name = "mcdata" },
 ]
 
 [package.dev-dependencies]
@@ -262,9 +269,12 @@ dev = [
 requires-dist = [
     { name = "construct", specifier = ">=2.10.68" },
     { name = "cryptography", specifier = ">=46.0.1" },
+    { name = "mcdata", marker = "extra == 'mcdata'", editable = "packages/mcdata" },
     { name = "mutf8", specifier = ">=1.0.6" },
     { name = "pyprotodef", git = "https://github.com/beer-psi/pyprotodef" },
+    { name = "typing-extensions", specifier = ">=4.15.0" },
 ]
+provides-extras = ["mcdata"]
 
 [package.metadata.requires-dev]
 client = [{ name = "anyio", specifier = ">=4.10.0" }]
@@ -278,8 +288,10 @@ source = { virtual = "." }
 [package.dev-dependencies]
 dev = [
     { name = "basedpyright" },
+    { name = "construct-typing" },
     { name = "mcdata" },
     { name = "mcproto" },
+    { name = "nazuna" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "ruff" },
@@ -291,6 +303,7 @@ test = [
 workspaces = [
     { name = "mcdata" },
     { name = "mcproto" },
+    { name = "nazuna" },
 ]
 
 [package.metadata]
@@ -298,8 +311,10 @@ workspaces = [
 [package.metadata.requires-dev]
 dev = [
     { name = "basedpyright", specifier = "==1.31.4" },
+    { name = "construct-typing", specifier = ">=0.6.2" },
     { name = "mcdata", editable = "packages/mcdata" },
     { name = "mcproto", editable = "packages/mcproto" },
+    { name = "nazuna", editable = "packages/nazuna" },
     { name = "pytest", specifier = ">=8.4.2" },
     { name = "pytest-cov", specifier = ">=7.0.0" },
     { name = "ruff", specifier = "==0.13.0" },
@@ -311,6 +326,7 @@ test = [
 workspaces = [
     { name = "mcdata", editable = "packages/mcdata" },
     { name = "mcproto", editable = "packages/mcproto" },
+    { name = "nazuna", editable = "packages/nazuna" },
 ]
 
 [[package]]
@@ -318,6 +334,25 @@ name = "mutf8"
 version = "1.0.6"
 source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/ca/31/3c57313757b3a47dcf32d2a9bad55d913b797efc8814db31bed8a7142396/mutf8-1.0.6.tar.gz", hash = "sha256:1bbbefb67c2e5a57104750bb04b0912200b57b2fa9841be245279e83859cb346", size = 6424, upload-time = "2021-12-29T03:02:17.271Z" }
+
+[[package]]
+name = "nazuna"
+version = "0.1.0"
+source = { editable = "packages/nazuna" }
+dependencies = [
+    { name = "anyio" },
+    { name = "mcdata" },
+    { name = "mcproto" },
+    { name = "typing-extensions" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "anyio", specifier = ">=4.10.0" },
+    { name = "mcdata", editable = "packages/mcdata" },
+    { name = "mcproto", editable = "packages/mcproto" },
+    { name = "typing-extensions", specifier = ">=4.15.0" },
+]
 
 [[package]]
 name = "nodejs-wheel-binaries"

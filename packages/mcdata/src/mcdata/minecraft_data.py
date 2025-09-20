@@ -91,10 +91,7 @@ class BlockIndex(Index[Block]):
                 max_state_id := item.get("maxStateId")
             ) is not None:
                 result.update(
-                    {
-                        state_id: item
-                        for state_id in range(min_state_id, max_state_id + 1)
-                    }
+                    dict.fromkeys(range(min_state_id, max_state_id + 1), item)
                 )
 
         return result
@@ -230,7 +227,7 @@ class MinecraftData(metaclass=MinecraftDataMeta):
 
     @cached_property
     def available_data(self):
-        return set(underscore(k) for k in self._version_data_paths if k != "proto")
+        return {underscore(k) for k in self._version_data_paths if k != "proto"}
 
     def load_collections(self, data_types: Sequence[str] | None = None):
         """

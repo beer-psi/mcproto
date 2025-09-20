@@ -2,7 +2,7 @@ from typing import Required, TypedDict
 
 
 class Sound(TypedDict, total=False):
-    """ sound. """
+    """sound."""
 
     id: Required[int]
     """
@@ -21,11 +21,9 @@ class Sound(TypedDict, total=False):
     """
 
 
-
 Sounds = list["Sound"]
 """
 sounds.
 
 uniqueItems: True
 """
-

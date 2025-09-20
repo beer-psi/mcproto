@@ -7,6 +7,7 @@ requires-python = ">=3.13"
 [dependency-groups]
 dev = [
     "basedpyright==1.31.4",
+    "construct-typing>=0.6.2",
     "ruff==0.13.0",
     { include-group = "test" },
     { include-group = "workspaces" },
@@ -15,11 +16,12 @@ test = [
     "pytest>=8.4.2",
     "pytest-cov>=7.0.0",
 ]
-workspaces = ["mcproto", "mcdata"]
+workspaces = ["mcproto", "mcdata", "nazuna"]
 
 [tool.uv.sources]
 mcproto = { workspace = true }
 mcdata = { workspace = true }
+nazuna = { workspace = true }
 
 [tool.uv.workspace]
 members = ["packages/*"]
@@ -28,3 +30,41 @@ members = ["packages/*"]
 typeCheckingMode = "strict"
 stubPath = "stubs"
 disableBytesTypePromotions = false
+
+[tool.ruff]
+respect-gitignore = true
+
+[tool.ruff.lint]
+select = [
+    "ASYNC",
+    "B",
+    "BLE",
+    "C4",
+    "DTZ",
+    "E",
+    "F",
+    "FBT",
+    "FLY",
+    "I",
+    "ISC",
+    "Q",
+    "PERF",
+    "PGH",
+    "PIE",
+    "PTH",
+    "RET",
+    "RSE",
+    "RUF",
+    "SIM",
+    "TRY",
+    "TID252",
+    "W",
+]
+ignore = ["E501", "TRY003"]
+unfixable = ["B"]
+
+[tool.ruff.lint.pycodestyle]
+ignore-overlong-task-comments = true
+
+[tool.ruff.lint.flake8-builtins]
+builtins-ignorelist = ["id"]
