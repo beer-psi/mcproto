@@ -1,15 +1,16 @@
 # pyright: reportAny=false, reportExplicitAny=false
+import json
 from collections.abc import Generator
 from enum import IntEnum
 from typing import Any, Literal, cast
 
 import protodef
-from mcdata import MinecraftData
 
 from .codecs import ADDITIONAL_PROTODEF_TYPES
 from .exceptions import LocalProtocolError, RemoteProtocolError
 from .packets import Packet
-from .packets.serverbound.handshaking import ConnectionIntent
+from .packets.clientbound.login import LoginCompressionS2CParams
+from .packets.serverbound.handshaking import ConnectionIntent, HandshakeC2SParams
 from .protocol import MinecraftProtocol
 from .types import MinecraftProtocolDefinition, MultiplayerState, TextComponent
 
@@ -48,10 +49,12 @@ class MinecraftConnection:
 
     @classmethod
     def for_version(cls, version: str, connection_type: ConnectionType):
+        from mcdata import MinecraftData
+
         mc_data = MinecraftData(version)
-        proto = protodef.from_definition(  # pyright: ignore[reportUnknownMemberType]
+        proto = protodef.from_definition(
             mc_data.protocol,
-            additional_types=ADDITIONAL_PROTODEF_TYPES,
+            additional_types=ADDITIONAL_PROTODEF_TYPES,  # pyright: ignore[reportArgumentType]
         )
         proto_version = MinecraftData.pc_versions_by_minecraft_version[version][
             "version"
@@ -221,7 +224,9 @@ class MinecraftConnection:
             "kick_disconnect"
             if self._protocol.state == MultiplayerState.PLAY
             else "disconnect",
-            reason=reason,
+            reason=json.dumps(reason)
+            if self._protocol.state == MultiplayerState.LOGIN
+            else reason,
         )
 
         return data
@@ -235,12 +240,9 @@ class MinecraftConnection:
         if handler_fn is not None:
             handler_fn(packet["params"])
 
-    def _on_handshaking_set_protocol(self, params: Any):
+    def _on_handshaking_set_protocol(self, params: HandshakeC2SParams):
         next_state = params["nextState"]
         exc_type = LocalProtocolError if self.is_client else RemoteProtocolError
-
-        if not isinstance(next_state, int):
-            raise exc_type("nextState must be an integer")
 
         if next_state == ConnectionIntent.STATUS.value:
             self._protocol.state = MultiplayerState.STATUS
@@ -252,14 +254,8 @@ class MinecraftConnection:
         else:
             raise exc_type(f"invalid next state: {next_state}")
 
-    def _on_login_compress(self, params: Any):
-        threshold = params["threshold"]
-        exc_type = RemoteProtocolError if self.is_client else LocalProtocolError
-
-        if not isinstance(threshold, int):
-            raise exc_type("a compress packet with a non-integer threshold")
-
-        self._protocol.set_compression(threshold)
+    def _on_login_compress(self, params: LoginCompressionS2CParams):
+        self._protocol.set_compression(params["threshold"])
 
     def _on_disconnect(self, _params: Any):
         self._connection_state = ConnectionState.CLOSED
