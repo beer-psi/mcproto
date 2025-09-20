@@ -1,6 +1,7 @@
 # pyright: reportAny=false
 from enum import IntEnum
-from typing import Literal, TypedDict
+from typing import Literal, NotRequired, TypedDict
+from typing_extensions import TypeAlias
 
 from construct import (
     Bytes,
@@ -9,9 +10,9 @@ from construct import (
     Int8ub,
     Int16ub,
     Int32sb,
-    Optional,
     Prefixed,
     Rebuild,
+    Select,
     StringEncoded,
     Struct,
     len_,
@@ -20,21 +21,33 @@ from construct import (
 
 from mcproto.packets.base import Packet
 
-LegacyServerListPingFormat = Struct(
-    "ping"
-    / Struct(
-        Const(b"\xfe"),
-        "payload" / Optional(Const(b"\x01")),
-    ),
-    "message"
-    / Optional(
-        Struct(
+__all__ = (
+    "LegacyServerListPingFormat",
+    "LegacyServerListPingPre13Params",
+    "LegacyServerListPing14Params",
+    "LegacyServerListPingParams",
+    "LegacyServerListPingPacket",
+    "ConnectionIntent",
+    "HandshakeC2SParams",
+    "HandshakeC2SPacket",
+)
+
+
+LegacyServerListPingFormat = Select(
+    Struct(
+        "ping"
+        / Struct(
+            Const(b"\xfe"),
+            "payload" / Const(b"\x01"),
+        ),
+        "message"
+        / Struct(
             Const(b"\xfa"),
             "query_name"
             / FocusedSeq(
-                "name",
-                "length" / Const(b"\x00\x0b"),
-                "name"
+                "data",
+                "length" / Rebuild(Int16ub, len_(this.data)),
+                "data"
                 / StringEncoded(Const("MC|PingHost".encode("utf-16-be")), "utf-16-be"),
             ),
             "data"
@@ -44,16 +57,53 @@ LegacyServerListPingFormat = Struct(
                     "protocol_version" / Int8ub,
                     "hostname"
                     / FocusedSeq(
-                        "name",
-                        "length" / Rebuild(Int16ub, len_(this.name * 2)),
-                        "name" / StringEncoded(Bytes(this.length * 2), "utf-16-be"),
+                        "data",
+                        "length" / Rebuild(Int16ub, len_(this.data)),
+                        "data" / StringEncoded(Bytes(this.length * 2), "utf-16-be"),
                     ),
                     "port" / Int32sb,
                 ),
             ),
-        )
+        ),
     ),
+    Struct("ping" / Struct(Const(b"\xfe"), "payload" / Const(b"\x01"))),
+    Struct("ping" / Struct(Const(b"\xfe"))),
 )
+
+
+class PingParams(TypedDict):
+    payload: Literal[b"\x01"]
+
+
+class MCPingHostData(TypedDict):
+    protocol_version: int
+    hostname: str
+    port: int
+
+
+class MessageParams(TypedDict):
+    query_name: Literal["MC|PingHost"]
+    data: MCPingHostData
+
+
+class LegacyServerListPingPre13Params(TypedDict):
+    pass
+
+
+class LegacyServerListPing14Params(TypedDict):
+    ping: PingParams
+    message: NotRequired[MessageParams]
+
+
+LegacyServerListPingParams: TypeAlias = (
+    LegacyServerListPingPre13Params | LegacyServerListPing14Params
+)
+
+
+class LegacyServerListPingPacket(
+    Packet[Literal["legacy_server_list_ping"], LegacyServerListPingParams]
+):
+    pass
 
 
 class ConnectionIntent(IntEnum):

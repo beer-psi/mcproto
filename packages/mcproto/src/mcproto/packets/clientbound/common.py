@@ -2,8 +2,41 @@ from typing import Any, Literal, TypedDict
 from uuid import UUID
 
 from mcproto.packets.base import Packet
-from mcproto.packets.common import KeyValuePair
+from mcproto.packets.types import KeyValuePair
 from mcproto.types import TextComponent
+
+__all__ = (
+    "CookieRequestS2CParams",
+    "CookieRequestS2CPacket",
+    "StoreCookieS2CParams",
+    "StoreCookieS2CPacket",
+    "CustomPayloadS2CParams",
+    "CustomPayloadS2CPacket",
+    "DisconnectS2CParams",
+    "DisconnectS2CPacket",
+    "CommonPingS2CParams",
+    "CommonPingS2CPacket",
+    "ResourcePackRemoveS2CParams",
+    "ResourcePackRemoveS2CPacket",
+    "ResourcePackSendS2CParams",
+    "ResourcePackSendS2CPacket",
+    "ServerTransferS2CParams",
+    "ServerTransferS2CPacket",
+    "Tag",
+    "TagGroup",
+    "SynchronizeTagsS2CParams",
+    "SynchronizeTagsS2CPacket",
+    "CustomReportDetailsS2CParams",
+    "CustomReportDetailsS2CPacket",
+    "ServerLinkKnownType",
+    "ServerLinkUnknownType",
+    "ServerLinksS2CParams",
+    "ServerLinksS2CPacket",
+    "ClearDialogS2CParams",
+    "ClearDialogS2CPacket",
+    "ShowDialogS2CParams",
+    "ShowDialogS2CPacket",
+)
 
 
 class CookieRequestS2CParams(TypedDict):
@@ -39,14 +72,6 @@ class DisconnectS2CParams(TypedDict):
 class DisconnectS2CPacket(
     Packet[Literal["disconnect", "kick_disconnect"], DisconnectS2CParams]
 ):
-    pass
-
-
-class KeepAliveS2CParams(TypedDict):
-    keepAliveId: int
-
-
-class KeepAliveS2CPacket(Packet[Literal["keep_alive"], KeepAliveS2CParams]):
     pass
 
 

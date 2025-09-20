@@ -8,7 +8,11 @@ dependencies = [
     "cryptography>=46.0.1",
     "mutf8>=1.0.6",
     "pyprotodef",
+    "typing-extensions>=4.15.0",
 ]
+
+[project.optional-dependencies]
+mcdata = ["mcdata"]
 
 [build-system]
 requires = ["uv_build>=0.8.17,<0.9.0"]

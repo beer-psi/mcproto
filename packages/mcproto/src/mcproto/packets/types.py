@@ -3,6 +3,8 @@ from typing import Generic, TypedDict, TypeVar
 _KT = TypeVar("_KT")
 _VT = TypeVar("_VT")
 
+__all__ = ("SignedProperty", "VersionedIdentifier", "KeyValuePair")
+
 
 class SignedProperty(TypedDict):
     name: str

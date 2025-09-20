@@ -232,7 +232,7 @@ class MinecraftProtocol:
         self._decryption_handler.cipher = self._cipher
         self._decryption_handler.decryptor = self._cipher.decryptor()
 
-    def receive_bytes(self, data: bytes):
+    def receive_data(self, data: bytes):
         """Put some received bytes into the protocol for processing."""
 
         return self._decryption_handler.receive_data(data)
@@ -253,14 +253,17 @@ class MinecraftProtocol:
         it will be serialized using the current state's packet.
         """
 
-        if isinstance(packet, (bytes, bytearray)):
-            data = packet
-        else:
+        if isinstance(packet, dict):
             try:
-                # a packet is literally a typeddict doofus
-                data = self._send_packet_struct.build(packet)  # pyright: ignore[reportArgumentType]
+                if packet["name"] == "legacy_server_list_ping":
+                    data = LegacyServerListPingFormat.build(packet["params"])
+                else:
+                    # a packet is literally a typeddict doofus
+                    data = self._send_packet_struct.build(packet)  # pyright: ignore[reportArgumentType]
             except ConstructError as e:
                 raise LocalProtocolError(f"could not serialize packet {packet}") from e
+        else:
+            data = packet
 
         if self._compression_threshold >= 0:  # if compression is enabled
             if (

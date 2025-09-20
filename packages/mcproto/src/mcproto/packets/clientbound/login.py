@@ -2,7 +2,20 @@ from typing import Literal, TypedDict
 from uuid import UUID
 
 from mcproto.packets.base import Packet
-from mcproto.packets.common import SignedProperty
+from mcproto.packets.types import SignedProperty
+
+__all__ = (
+    "LoginDisconnectedS2CParams",
+    "LoginDisconnectedS2CPacket",
+    "LoginHelloS2CParams",
+    "LoginHelloS2CPacket",
+    "LoginSuccessS2CParams",
+    "LoginSuccessS2CPacket",
+    "LoginCompressionS2CParams",
+    "LoginCompressionS2CPacket",
+    "LoginQueryRequestS2CParams",
+    "LoginQueryRequestS2CPacket",
+)
 
 
 class LoginDisconnectedS2CParams(TypedDict):
@@ -19,7 +32,7 @@ class LoginDisconnectedS2CPacket(
 class LoginHelloS2CParams(TypedDict):
     serverId: str
     publicKey: bytes
-    varifyToken: bytes
+    verifyToken: bytes
     shouldAuthenticate: bool
 
 

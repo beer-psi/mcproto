@@ -1,7 +1,18 @@
 from typing import Any, Literal, TypedDict
 
 from mcproto.packets.base import Packet
-from mcproto.packets.common import VersionedIdentifier
+
+__all__ = (
+    "ReadyS2CParams",
+    "ReadyS2CPacket",
+    "ResetChatS2CParams",
+    "ResetChatS2CPacket",
+    "RegistryEntry",
+    "DynamicRegistriesS2CParams",
+    "DynamicRegistriesS2CPacket",
+    "FeaturesS2CParams",
+    "FeaturesS2CPacket",
+)
 
 
 class ReadyS2CParams(TypedDict):
@@ -32,16 +43,6 @@ class DynamicRegistriesS2CParams(TypedDict):
 
 class DynamicRegistriesS2CPacket(
     Packet[Literal["registry_data"], DynamicRegistriesS2CParams]
-):
-    pass
-
-
-class SelectKnownPacksS2CParams(TypedDict):
-    packs: list[VersionedIdentifier]
-
-
-class SelectKnownPacksS2CPacket(
-    Packet[Literal["select_known_packs"], SelectKnownPacksS2CParams]
 ):
     pass
 

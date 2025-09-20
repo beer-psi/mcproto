@@ -49,6 +49,18 @@ class MinecraftConnection:
 
     @classmethod
     def for_version(cls, version: str, connection_type: ConnectionType):
+        """
+        Instantiate a :class:`MinecraftConnection` object for the specified version
+        and connection type.
+
+        This requires the `mcdata` package, which you can install with the `mcdata`
+        extra:
+
+        ```shell
+        pip install mcproto[mcdata]
+        ```
+        """
+
         from mcdata import MinecraftData
 
         mc_data = MinecraftData(version)
@@ -158,7 +170,7 @@ class MinecraftConnection:
         :param bytes data: The data received from the remote server.
         """
 
-        self._protocol.receive_bytes(data)
+        self._protocol.receive_data(data)
 
     def packets(self) -> Generator[Packet[Any, Any], None, None]:
         """
