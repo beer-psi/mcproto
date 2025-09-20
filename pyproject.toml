@@ -1,38 +1,30 @@
 [project]
-name = "mcproto"
+name = "mcproto-workspace"
 version = "0.1.0"
-description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = [
-    "construct>=2.10.68",
-    "cryptography>=46.0.1",
-    "mutf8>=1.0.6",
-    "pyprotodef",
-    "typing-extensions>=4.15.0",
-]
-
-[build-system]
-requires = ["uv_build>=0.8.17,<0.9.0"]
-build-backend = "uv_build"
 
 [dependency-groups]
-client = [
-    "anyio>=4.10.0",
-]
 dev = [
     "basedpyright==1.31.4",
-    "construct-typing>=0.6.2",
     "ruff==0.13.0",
+    { include-group = "test" },
+    { include-group = "workspaces" },
 ]
 test = [
     "pytest>=8.4.2",
     "pytest-cov>=7.0.0",
 ]
-
-[tool.basedpyright]
-stubPath = "stubs"
-disableBytesTypePromotions = false
+workspaces = ["mcproto", "mcdata"]
 
 [tool.uv.sources]
-pyprotodef = { git = "https://github.com/beer-psi/pyprotodef" }
+mcproto = { workspace = true }
+mcdata = { workspace = true }
+
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.basedpyright]
+typeCheckingMode = "strict"
+stubPath = "stubs"
+disableBytesTypePromotions = false

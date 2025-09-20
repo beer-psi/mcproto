@@ -1,0 +1,26 @@
+[project]
+name = "mcproto"
+version = "0.1.0"
+description = "Sans I/O implementation of the Minecraft multiplayer protocol"
+requires-python = ">=3.13"
+dependencies = [
+    "construct>=2.10.68",
+    "cryptography>=46.0.1",
+    "mutf8>=1.0.6",
+    "pyprotodef",
+]
+
+[build-system]
+requires = ["uv_build>=0.8.17,<0.9.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+client = [
+    "anyio>=4.10.0",
+]
+dev = [
+    "construct-typing>=0.6.2",
+]
+
+[tool.uv.sources]
+pyprotodef = { git = "https://github.com/beer-psi/pyprotodef" }

@@ -2,6 +2,13 @@ version = 1
 revision = 3
 requires-python = ">=3.13"
 
+[manifest]
+members = [
+    "mcdata",
+    "mcproto",
+    "mcproto-workspace",
+]
+
 [[package]]
 name = "anyio"
 version = "4.10.0"
@@ -228,15 +235,19 @@ wheels = [
 ]
 
 [[package]]
+name = "mcdata"
+version = "0.1.0"
+source = { editable = "packages/mcdata" }
+
+[[package]]
 name = "mcproto"
 version = "0.1.0"
-source = { editable = "." }
+source = { editable = "packages/mcproto" }
 dependencies = [
     { name = "construct" },
     { name = "cryptography" },
     { name = "mutf8" },
     { name = "pyprotodef" },
-    { name = "typing-extensions" },
 ]
 
 [package.dev-dependencies]
@@ -244,13 +255,7 @@ client = [
     { name = "anyio" },
 ]
 dev = [
-    { name = "basedpyright" },
     { name = "construct-typing" },
-    { name = "ruff" },
-]
-test = [
-    { name = "pytest" },
-    { name = "pytest-cov" },
 ]
 
 [package.metadata]
@@ -259,19 +264,53 @@ requires-dist = [
     { name = "cryptography", specifier = ">=46.0.1" },
     { name = "mutf8", specifier = ">=1.0.6" },
     { name = "pyprotodef", git = "https://github.com/beer-psi/pyprotodef" },
-    { name = "typing-extensions", specifier = ">=4.15.0" },
 ]
 
 [package.metadata.requires-dev]
 client = [{ name = "anyio", specifier = ">=4.10.0" }]
+dev = [{ name = "construct-typing", specifier = ">=0.6.2" }]
+
+[[package]]
+name = "mcproto-workspace"
+version = "0.1.0"
+source = { virtual = "." }
+
+[package.dev-dependencies]
+dev = [
+    { name = "basedpyright" },
+    { name = "mcdata" },
+    { name = "mcproto" },
+    { name = "pytest" },
+    { name = "pytest-cov" },
+    { name = "ruff" },
+]
+test = [
+    { name = "pytest" },
+    { name = "pytest-cov" },
+]
+workspaces = [
+    { name = "mcdata" },
+    { name = "mcproto" },
+]
+
+[package.metadata]
+
+[package.metadata.requires-dev]
 dev = [
     { name = "basedpyright", specifier = "==1.31.4" },
-    { name = "construct-typing", specifier = ">=0.6.2" },
+    { name = "mcdata", editable = "packages/mcdata" },
+    { name = "mcproto", editable = "packages/mcproto" },
+    { name = "pytest", specifier = ">=8.4.2" },
+    { name = "pytest-cov", specifier = ">=7.0.0" },
     { name = "ruff", specifier = "==0.13.0" },
 ]
 test = [
     { name = "pytest", specifier = ">=8.4.2" },
     { name = "pytest-cov", specifier = ">=7.0.0" },
+]
+workspaces = [
+    { name = "mcdata", editable = "packages/mcdata" },
+    { name = "mcproto", editable = "packages/mcproto" },
 ]
 
 [[package]]
