@@ -51,7 +51,7 @@ class MinecraftConnection:
         mc_data = MinecraftData(version)
         proto = protodef.from_definition(  # pyright: ignore[reportUnknownMemberType]
             mc_data.protocol,
-            additional_types=ADDITIONAL_PROTODEF_TYPES,  # pyright: ignore[reportArgumentType]
+            additional_types=ADDITIONAL_PROTODEF_TYPES,
         )
         proto_version = MinecraftData.pc_versions_by_minecraft_version[version][
             "version"
@@ -199,6 +199,9 @@ class MinecraftConnection:
         be JSON-serializable.
         """
 
+        if self._connection_state == ConnectionState.CLOSED:
+            return None
+
         if self.is_client:
             self._connection_state = ConnectionState.CLOSED
             return None
@@ -212,7 +215,7 @@ class MinecraftConnection:
             return None
 
         if reason is None:
-            reason = {"type": "text", "text": "Disconnected"}
+            reason = {"translate": "multiplayer.disconnect.generic"}
 
         data = self.send_packet(
             "kick_disconnect"
