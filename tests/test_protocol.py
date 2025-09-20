@@ -204,14 +204,14 @@ def test_decompression_handler_uncompressed_length_mismatch():
 
 
 def test_decryption_handler_do_nothing_if_disabled():
-    decryption_handler = DecryptionHandler(DecompressionHandler(FrameDecoder()))
+    decryption_handler = DecryptionHandler(FrameDecoder())
 
     decryption_handler.receive_data(b"\x01\x00")
     assert decryption_handler.process_buffer() == b"\x00"
 
 
 def test_decryption_handler_decrypts_data():
-    decryption_handler = DecryptionHandler(DecompressionHandler(FrameDecoder()))
+    decryption_handler = DecryptionHandler(FrameDecoder())
     decryption_handler.set_encryption(b"S3cur3P455w0rd!!")
 
     decryption_handler.receive_data(b"\xb2\x4b")
@@ -223,7 +223,7 @@ def test_decryption_handler_decrypts_data():
 
 
 def test_decryption_handler_set_twice():
-    decryption_handler = DecryptionHandler(DecompressionHandler(FrameDecoder()))
+    decryption_handler = DecryptionHandler(FrameDecoder())
     decryption_handler.set_encryption(b"S3cur3P455w0rd!!")
 
     with pytest.raises(EncryptionSetTwiceError):

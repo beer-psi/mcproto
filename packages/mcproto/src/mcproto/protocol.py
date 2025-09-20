@@ -1,4 +1,4 @@
-# pyright: reportAny=false
+# pyright: reportAny=false, disableBytesTypePromotions=false
 import io
 import zlib
 from collections.abc import Generator, Mapping
@@ -16,7 +16,6 @@ from cryptography.hazmat.primitives.ciphers import (
 from protodef.datatypes.varint import SizedVarInt
 
 from .codecs import ADDITIONAL_PROTODEF_TYPES
-from .data import MinecraftData
 from .exceptions import (
     EncryptionSetTwiceError,
     LocalProtocolError,
@@ -45,7 +44,7 @@ class Buffer:
 
     def consume_at_most(self, nbytes: int) -> bytes:
         if not nbytes:
-            return bytearray()
+            return b""
 
         data = self.buffer[self.bytes_used : self.bytes_used + nbytes]
         self.bytes_used += len(data)
@@ -136,6 +135,8 @@ class MinecraftProtocol:
 
         [minecraft-data]: https://github.com/PrismarineJS/minecraft-data
         """
+
+        from mcdata import MinecraftData
 
         mc_data = MinecraftData(version)
         proto = protodef.from_definition(
